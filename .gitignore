@@ -1,0 +1,16 @@
+# Arquivos de mídia grandes
+*.mp4
+*.opus
+*.jpg
+
+# Documentos
+*.pdf
+*.xlsx
+
+# Caches e arquivos antigos
+__pycache__/
+*.pyc
+.venv/
+venv/
+catalogo_unicorp_metha_2025_v1.json
+assistente.py

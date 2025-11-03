@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador de Cursos</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+        }
+        h1 {
+            color: #0056b3;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+        .filtros {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .filtro-item input,
+        .filtro-item select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box; /* Garante que o padding não quebre o layout */
+        }
+        #btn-buscar {
+            grid-column: 1 / -1; /* Ocupa as duas colunas */
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        #btn-buscar:hover {
+            background-color: #0056b3;
+        }
+        #total-resultados {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 15px;
+        }
+        .curso-card {
+            background-color: #fdfdfd;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+        }
+        .curso-card h3 {
+            margin: 0 0 10px 0;
+            color: #007bff;
+        }
+        .curso-card strong {
+            color: #444;
+        }
+        .curso-card p {
+            margin: 5px 0;
+            line-height: 1.5;
+        }
+        .curso-card .argumento {
+            font-style: italic;
+            color: #006400;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #eee;
+        }
+        #loading {
+            text-align: center;
+            font-size: 18px;
+            color: #888;
+            display: none; /* Começa escondido */
+        }
+        
+        /* --- NOVO ESTILO PARA O BOTÃO WHATSAPP --- */
+        .btn-whatsapp {
+            display: inline-block;
+            text-decoration: none;
+            background-color: #25D366;
+            color: white !important;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+            transition: background-color 0.2s;
+        }
+        .btn-whatsapp:hover {
+            background-color: #1DA851;
+        }
+        
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Buscador de Cursos</h1>
+        
+        <div class="filtros">
+            <div class="filtro-item">
+                <label for="filtro-termo">Buscar por nome:</label>
+                <input type="text" id="filtro-termo" placeholder="Ex: Logística, Segurança...">
+            </div>
+            
+            <div class="filtro-item">
+                <label for="filtro-instituicao">Instituição:</label>
+                <select id="filtro-instituicao">
+                    <option value="">-- Todas --</option>
+                </select>
+            </div>
+            
+            <div class="filtro-item">
+                <label for="filtro-categoria">Categoria:</label>
+                <select id="filtro-categoria">
+                    <option value="">-- Todas --</option>
+                </select>
+            </div>
+            
+            <button id="btn-buscar">Buscar</button>
+        </div>
+        
+        <div id="total-resultados"></div>
+        <div id="loading">Carregando...</div>
+        <div id="resultados-container">
+            </div>
+    </div>
+
+    <script>
+        // URL da sua API (ela deve estar rodando!)
+        const API_URL = "http://127.0.0.1:8000";
+
+        // --- Elementos da Página ---
+        const selectInstituicao = document.getElementById('filtro-instituicao');
+        const selectCategoria = document.getElementById('filtro-categoria');
+        const inputTermo = document.getElementById('filtro-termo');
+        const btnBuscar = document.getElementById('btn-buscar');
+        const divResultados = document.getElementById('resultados-container');
+        const divTotal = document.getElementById('total-resultados');
+        const divLoading = document.getElementById('loading');
+
+        // --- Funções ---
+
+        // 1. Função para popular os filtros (selects)
+        async function popularFiltros() {
+            try {
+                // Buscar Instituições
+                const respInstituicoes = await fetch(`${API_URL}/instituicoes/`);
+                const instituicoes = await respInstituicoes.json();
+                instituicoes.forEach(inst => {
+                    const option = new Option(inst, inst);
+                    selectInstituicao.add(option);
+                });
+
+                // Buscar Categorias
+                const respCategorias = await fetch(`${API_URL}/categorias/`);
+                const categorias = await respCategorias.json();
+                categorias.forEach(cat => {
+                    const option = new Option(cat, cat);
+                    selectCategoria.add(option);
+                });
+                
+            } catch (error) {
+                console.error("Erro ao popular filtros:", error);
+                divResultados.innerHTML = "<p>Erro ao carregar os filtros. A API está rodando?</p>";
+            }
+        }
+
+        // 2. Função principal de busca
+        async function buscar() {
+            // Mostrar loading e limpar resultados antigos
+            divLoading.style.display = 'block';
+            divResultados.innerHTML = '';
+            divTotal.innerHTML = '';
+
+            // Montar a URL de busca
+            const termo = inputTermo.value;
+            const instituicao = selectInstituicao.value;
+            const categoria = selectCategoria.value;
+
+            const params = new URLSearchParams();
+            if (termo) params.append('termo', termo);
+            if (instituicao) params.append('instituicao', instituicao);
+            if (categoria) params.append('categoria', categoria);
+
+            try {
+                const response = await fetch(`${API_URL}/cursos/?${params.toString()}`);
+                const data = await response.json();
+
+                divTotal.innerText = `${data.count} curso(s) encontrado(s).`;
+                
+                if (data.count === 0) {
+                    divResultados.innerHTML = "<p>Nenhum curso encontrado com esses filtros.</p>";
+                } else {
+                    // Criar os "cards" para cada curso
+                    data.cursos.forEach(curso => {
+                        const card = document.createElement('div');
+                        card.className = 'curso-card';
+                        
+                        // --- LÓGICA DO WHATSAPP ---
+                        // 1. Crie o texto da mensagem
+                        const textoWhatsApp = encodeURIComponent(
+                            `Olá, tenho interesse no curso *${curso.Nome}* da *${curso.Instituição}*. Poderia me passar mais informações?`
+                        );
+                        
+                        // 2. !! ALTERE AQUI para o seu número de WhatsApp
+                        // (Formato: DDI + DDD + Numero, tudo junto. Ex: 5561999998888)
+                        const seuNumeroWhatsApp = "5561999998888"; 
+                        
+                        const linkWhatsApp = `https://api.whatsapp.com/send?phone=${seuNumeroWhatsApp}&text=${textoWhatsApp}`;
+
+                        // 3. Crie o HTML do Card
+                        card.innerHTML = `
+                            <h3>${curso.Nome}</h3>
+                            <p><strong>Instituição:</strong> ${curso.Instituição}</p>
+                            <p><strong>Categoria:</strong> ${curso.Categoria} ${curso.Subcategoria ? `(${curso.Subcategoria})` : ''}</p>
+                            <p><strong>Duração:</strong> ${curso.Duração}</p>
+                            <p><strong>Requisitos:</strong> ${curso.Requisitos}</p>
+                            <p class="argumento">${curso['Argumento de Venda']}</p>
+                            
+                            <a href="${linkWhatsApp}" target="_blank" class="btn-whatsapp">
+                                Iniciar Venda (WhatsApp)
+                            </a>
+                        `;
+                        divResultados.appendChild(card);
+                    });
+                }
+
+            } catch (error) {
+                console.error("Erro ao buscar cursos:", error);
+                divResultados.innerHTML = "<p><strong>Erro!</strong> Não foi possível conectar à API. Verifique se o `api.py` está rodando no seu terminal.</p>";
+            } finally {
+                // Esconder o loading
+                divLoading.style.display = 'none';
+            }
+        }
+
+        // --- Eventos ---
+
+        // Popular os filtros assim que a página carregar
+        document.addEventListener('DOMContentLoaded', popularFiltros);
+        
+        // Atribuir a função de busca ao botão
+        btnBuscar.addEventListener('click', buscar);
+
+    </script>
+</body>
+</html>
