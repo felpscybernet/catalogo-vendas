@@ -4,32 +4,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buscador de Cursos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <style>
+        :root {
+            --cor-primaria: #007bff;
+            --cor-primaria-hover: #0056b3;
+            --cor-verde-wpp: #25D366;
+            --cor-verde-wpp-hover: #1DA851;
+            --cor-fundo: #f0f2f5;
+            --cor-card: #ffffff;
+            --cor-texto: #333;
+            --sombra: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f4f7f6;
-            color: #333;
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
         }
+
+        /* --- NOVO HEADER --- */
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        header h1 {
+            color: var(--cor-primaria);
+            margin: 0;
+        }
+        header p {
+            font-size: 1.1em;
+            color: #555;
+            margin-top: 5px;
+        }
+        /* --- FIM DO HEADER --- */
+
         .container {
             max-width: 900px;
             margin: 0 auto;
-            background-color: #ffffff;
+            background-color: var(--cor-card);
             border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--sombra);
             padding: 25px;
         }
-        h1 {
-            color: #0056b3;
-            border-bottom: 2px solid #e0e0e0;
-            padding-bottom: 10px;
-        }
+
         .filtros {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            /* 3 colunas para os filtros */
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-bottom: 20px;
+        }
+        
+        .filtro-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .filtro-item label {
+            margin-bottom: 5px;
+            font-weight: 500;
         }
         .filtro-item input,
         .filtro-item select {
@@ -37,44 +75,56 @@
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            box-sizing: border-box; /* Garante que o padding não quebre o layout */
+            box-sizing: border-box; 
+            font-size: 16px;
         }
+
         #btn-buscar {
-            grid-column: 1 / -1; /* Ocupa as duas colunas */
+            grid-column: 1 / -1; /* Ocupa todas as colunas */
             padding: 12px;
-            background-color: #007bff;
+            background-color: var(--cor-primaria);
             color: white;
             border: none;
             border-radius: 5px;
             font-size: 16px;
+            font-weight: 700;
             cursor: pointer;
             transition: background-color 0.2s;
         }
         #btn-buscar:hover {
-            background-color: #0056b3;
+            background-color: var(--cor-primaria-hover);
         }
+
         #total-resultados {
-            font-weight: bold;
+            font-weight: 700;
             color: #555;
             margin-bottom: 15px;
         }
+
+        /* --- CARD DE CURSO MELHORADO --- */
         .curso-card {
             background-color: #fdfdfd;
             border: 1px solid #eee;
             border-radius: 8px;
-            padding: 15px;
+            padding: 20px;
             margin-bottom: 15px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            transition: all 0.2s ease-in-out;
+        }
+        .curso-card:hover {
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
         }
         .curso-card h3 {
             margin: 0 0 10px 0;
-            color: #007bff;
+            color: var(--cor-primaria);
+            font-size: 1.3em;
         }
         .curso-card strong {
             color: #444;
         }
         .curso-card p {
-            margin: 5px 0;
+            margin: 8px 0;
             line-height: 1.5;
         }
         .curso-card .argumento {
@@ -84,6 +134,8 @@
             padding-top: 10px;
             border-top: 1px dashed #eee;
         }
+        /* --- FIM DO CARD --- */
+
         #loading {
             text-align: center;
             font-size: 18px;
@@ -91,11 +143,10 @@
             display: none; /* Começa escondido */
         }
         
-        /* --- NOVO ESTILO PARA O BOTÃO WHATSAPP --- */
         .btn-whatsapp {
             display: inline-block;
             text-decoration: none;
-            background-color: #25D366;
+            background-color: var(--cor-verde-wpp);
             color: white !important;
             padding: 10px 15px;
             border-radius: 5px;
@@ -105,20 +156,26 @@
             transition: background-color 0.2s;
         }
         .btn-whatsapp:hover {
-            background-color: #1DA851;
+            background-color: var(--cor-verde-wpp-hover);
         }
         
     </style>
 </head>
 <body>
+    
+    <header>
+        <h1>Catálogo de Cursos</h1>
+        <p>Encontre a qualificação ideal para sua carreira</p>
+    </header>
 
     <div class="container">
-        <h1>Buscador de Cursos</h1>
         
         <div class="filtros">
-            <div class="filtro-item">
+            <div class="filtro-item" style="grid-column: 1 / -1;">
                 <label for="filtro-termo">Buscar por nome:</label>
-                <input type="text" id="filtro-termo" placeholder="Ex: Logística, Segurança...">
+                <input type="text" id="filtro-termo" placeholder="Digite o nome do curso..." list="lista-de-cursos">
+                <datalist id="lista-de-cursos">
+                    </datalist>
             </div>
             
             <div class="filtro-item">
@@ -145,7 +202,7 @@
     </div>
 
     <script>
-        // URL da sua API (ela deve estar rodando!)
+        // URL da sua API (JÁ APONTANDO PARA O RENDER)
         const API_URL = "https://api-catalogo-filipe.onrender.com";
 
         // --- Elementos da Página ---
@@ -183,15 +240,34 @@
                 divResultados.innerHTML = "<p>Erro ao carregar os filtros. A API está rodando?</p>";
             }
         }
+        
+        // --- NOVA FUNÇÃO PARA POPULAR O AUTOCOMPLETE ---
+        async function popularAutocomplete() {
+            const datalist = document.getElementById('lista-de-cursos');
+            try {
+                // 1. Busca no novo endpoint /cursos/nomes/
+                const response = await fetch(`${API_URL}/cursos/nomes/`);
+                const nomes = await response.json();
+                
+                // 2. Cria uma <option> para cada nome de curso
+                nomes.forEach(nome => {
+                    const option = document.createElement('option');
+                    option.value = nome;
+                    datalist.appendChild(option);
+                });
+                
+            } catch (error) {
+                console.error("Erro ao popular autocomplete:", error);
+            }
+        }
+        // --- FIM DA NOVA FUNÇÃO ---
 
         // 2. Função principal de busca
         async function buscar() {
-            // Mostrar loading e limpar resultados antigos
             divLoading.style.display = 'block';
             divResultados.innerHTML = '';
             divTotal.innerHTML = '';
 
-            // Montar a URL de busca
             const termo = inputTermo.value;
             const instituicao = selectInstituicao.value;
             const categoria = selectCategoria.value;
@@ -210,24 +286,19 @@
                 if (data.count === 0) {
                     divResultados.innerHTML = "<p>Nenhum curso encontrado com esses filtros.</p>";
                 } else {
-                    // Criar os "cards" para cada curso
                     data.cursos.forEach(curso => {
                         const card = document.createElement('div');
                         card.className = 'curso-card';
                         
-                        // --- LÓGICA DO WHATSAPP ---
-                        // 1. Crie o texto da mensagem
                         const textoWhatsApp = encodeURIComponent(
                             `Olá, tenho interesse no curso *${curso.Nome}* da *${curso.Instituição}*. Poderia me passar mais informações?`
                         );
                         
-                        // 2. !! ALTERE AQUI para o seu número de WhatsApp
-                        // (Formato: DDI + DDD + Numero, tudo junto. Ex: 5561999998888)
-                        const seuNumeroWhatsApp = "556182915935"; 
+                        // !! ALTERE AQUI para o seu número de WhatsApp
+                        const seuNumeroWhatsApp = "5561999998888"; 
                         
                         const linkWhatsApp = `https://api.whatsapp.com/send?phone=${seuNumeroWhatsApp}&text=${textoWhatsApp}`;
 
-                        // 3. Crie o HTML do Card
                         card.innerHTML = `
                             <h3>${curso.Nome}</h3>
                             <p><strong>Instituição:</strong> ${curso.Instituição}</p>
@@ -248,17 +319,18 @@
                 console.error("Erro ao buscar cursos:", error);
                 divResultados.innerHTML = "<p><strong>Erro!</strong> Não foi possível conectar à API. Verifique se o `api.py` está rodando no seu terminal.</p>";
             } finally {
-                // Esconder o loading
                 divLoading.style.display = 'none';
             }
         }
 
         // --- Eventos ---
-
-        // Popular os filtros assim que a página carregar
-        document.addEventListener('DOMContentLoaded', popularFiltros);
         
-        // Atribuir a função de busca ao botão
+        // Popular os filtros E o autocomplete assim que a página carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            popularFiltros();
+            popularAutocomplete(); // <-- CHAMANDO A NOVA FUNÇÃO
+        });
+        
         btnBuscar.addEventListener('click', buscar);
 
     </script>

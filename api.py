@@ -1,5 +1,5 @@
 # Nome do arquivo: api.py
-# Salve este script no MESMO diretório do seu arquivo JSON.
+# (Código v2.0 com o novo endpoint /cursos/nomes/)
 
 import json
 import uvicorn
@@ -29,12 +29,11 @@ app = FastAPI(
 )
 
 # --- Configurar CORS (IMPORTANTE!) ---
-# Isso permite que um site (index.html) em outro domínio acesse sua API.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Permite todas as origens (para testes)
+    allow_origins=["*"],  # Permite todas as origens
     allow_credentials=True,
-    allow_methods=["*"],  # Permite todos os métodos (GET, POST, etc.)
+    allow_methods=["*"],  # Permite todos os métodos
     allow_headers=["*"],  # Permite todos os cabeçalhos
 )
 
@@ -59,11 +58,11 @@ def buscar_cursos(
     - **instituicao**: Filtra pela instituição exata.
     """
     
-    # Começa com a lista completa
     resultados = db_cursos
 
     if termo:
         termo_low = termo.lower()
+        # Modificado para buscar se o termo está no nome, ou se o nome é igual ao termo (para o autocomplete)
         resultados = [
             c for c in resultados 
             if termo_low in c.get('Nome', '').lower()
@@ -97,20 +96,26 @@ def get_instituicoes():
     instituicoes = sorted(list(set(c.get('Instituição', 'N/A') for c in db_cursos)))
     return instituicoes
 
+# --- NOVO ENDPOINT PARA O AUTOCOMPLETE ---
+@app.get("/cursos/nomes/", summary="Lista todos os nomes únicos de cursos", response_model=List[str])
+def get_nomes_cursos():
+    """Retorna uma lista única de todos os nomes de cursos para autocomplete."""
+    nomes = sorted(list(set(c.get('Nome', 'N/A') for c in db_cursos if c.get('Nome'))))
+    return nomes
+# --- FIM DO NOVO ENDPOINT ---
 
-# --- Executar o Servidor (Apenas para rodar direto com 'python api.py') ---
+
+# --- Executar o Servidor (Pronto para Produção) ---
 if __name__ == "__main__":
     import os
-    # O Render (nuvem) define a porta na variável de ambiente $PORT
-    # Se não houver (rodando local), ele usa a porta 8000 como padrão.
     port = int(os.environ.get("PORT", 8000))
-
+    
     print(f"Iniciando servidor API no host 0.0.0.0 e porta {port}")
     print(f"Acesse a documentação (Swagger) em: http://127.0.0.1:{port}/docs")
-
+    
     uvicorn.run(
         "api:app",
-        host="0.0.0.0",  # OBRIGATÓRIO para aceitar conexões externas
+        host="0.0.0.0",
         port=port,
-        reload=True     # Mantenha o reload para facilitar (o Render ignora isso)
+        reload=True
     )
