@@ -2,8 +2,11 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buscador de Cursos</title>
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -22,31 +25,45 @@
         body {
             font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0; /* Removido padding do body */
             background-color: var(--cor-fundo);
             color: var(--cor-texto);
         }
-        header {
+        
+        /* --- PASSO 2: NOVA SEÇÃO "HERO" (SOBRE + GATILHOS) --- */
+        .hero {
+            background: linear-gradient(rgba(0, 86, 179, 0.8), rgba(0, 86, 179, 0.8)), url('https://images.unsplash.com/photo-1523240795610-571c6d860350?auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 50px 20px;
             text-align: center;
-            margin-bottom: 20px;
         }
-        header h1 {
-            color: var(--cor-primaria);
+        .hero h1 {
             margin: 0;
+            font-size: 2.5em;
+            font-weight: 700;
         }
-        header p {
-            font-size: 1.1em;
-            color: #555;
-            margin-top: 5px;
+        .hero h2 {
+            font-size: 1.4em;
+            font-weight: 400;
+            margin: 10px 0 0 0;
+            opacity: 0.9;
         }
+        /* --- FIM DA SEÇÃO HERO --- */
+
+        /* Container do Buscador */
         .container {
             max-width: 900px;
-            margin: 0 auto;
+            margin: -30px auto 20px auto; /* Puxa para cima, sobrepondo o hero */
             background-color: var(--cor-card);
             border-radius: 10px;
             box-shadow: var(--sombra);
             padding: 25px;
+            position: relative; /* Garante que fique acima do hero */
+            z-index: 10;
         }
+
         .filtros {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -56,7 +73,7 @@
         .filtro-item {
             display: flex;
             flex-direction: column;
-            position: relative; /* Necessário para o autocomplete */
+            position: relative; 
         }
         .filtro-item label {
             margin-bottom: 5px;
@@ -130,19 +147,19 @@
         }
         .btn-whatsapp:hover { background-color: var(--cor-verde-wpp-hover); }
 
-        /* --- NOVOS ESTILOS PARA O AUTOCOMPLETE v3.0 --- */
+        /* Estilos do Autocomplete (v3.0) */
         #autocomplete-container {
-            position: relative; /* Define o contexto para o menu flutuante */
+            position: relative; 
         }
         #autocomplete-list {
             position: absolute;
             border: 1px solid #d4d4d4;
             border-top: none;
             z-index: 99;
-            top: 100%; /* Posiciona logo abaixo do input */
+            top: 100%;
             left: 0;
             right: 0;
-            max-height: 300px; /* Altura máxima antes de rolar */
+            max-height: 300px; 
             overflow-y: auto;
             background-color: #fff;
         }
@@ -154,19 +171,23 @@
         .autocomplete-item:hover {
             background-color: #e9e9e9;
         }
-        .autocomplete-item strong { /* Destaca a letra digitada */
+        .autocomplete-item strong { 
             color: var(--cor-primaria-hover);
         }
-        /* --- FIM DOS NOVOS ESTILOS --- */
         
     </style>
 </head>
 <body>
     
-    <header>
-        <h1>Catálogo de Cursos</h1>
-        <p>Encontre a qualificação ideal para sua carreira</p>
-    </header>
+    <section class="hero">
+        <h1>Transforme sua Carreira Hoje</h1>
+        <h2>De "quebra-galho" a **referência na equipe**.</h2>
+        <p style="max-width: 600px; margin: 15px auto 0 auto;">
+            Invista em você e conquiste **mais oportunidades, mais respeito e mais renda**. 
+            Todos os nossos cursos (Técnicos, Graduação e Pós) são 100% EAD e possuem **diploma reconhecido pelo MEC/SISTEC**.
+            Gente da região já está entrando em novas vagas. Comece agora!
+        </p>
+    </section>
 
     <div class="container">
         
@@ -202,7 +223,6 @@
     <script>
         const API_URL = "https://api-catalogo-filipe.onrender.com";
 
-        // --- Elementos da Página ---
         const selectInstituicao = document.getElementById('filtro-instituicao');
         const selectCategoria = document.getElementById('filtro-categoria');
         const inputTermo = document.getElementById('filtro-termo');
@@ -211,11 +231,8 @@
         const divTotal = document.getElementById('total-resultados');
         const divLoading = document.getElementById('loading');
         
-        // --- NOVOS ELEMENTOS v3.0 ---
         const autocompleteList = document.getElementById('autocomplete-list');
-        let listaNomesCursos = []; // Array local para guardar os nomes
-
-        // --- Funções ---
+        let listaNomesCursos = []; 
 
         async function popularFiltros() {
             try {
@@ -232,72 +249,59 @@
             }
         }
         
-        // --- FUNÇÃO MODIFICADA v3.0 ---
-        // Agora ela salva os nomes em um array local (listaNomesCursos)
         async function popularAutocomplete() {
             try {
                 const response = await fetch(`${API_URL}/cursos/nomes/`);
-                listaNomesCursos = await response.json(); // Salva na variável global
+                listaNomesCursos = await response.json(); 
             } catch (error) {
                 console.error("Erro ao popular autocomplete:", error);
             }
         }
 
-        // --- LÓGICA DO AUTOCOMPLETE v3.0 ---
-        
-        // Função para fechar o menu de sugestões
         function fecharAutocomplete() {
             autocompleteList.innerHTML = '';
         }
 
-        // Evento 'input': dispara a cada letra digitada
         inputTermo.addEventListener('input', function(e) {
-            fecharAutocomplete(); // Limpa sugestões antigas
+            fecharAutocomplete(); 
             
             const valorDigitado = this.value.toLowerCase();
-            if (!valorDigitado) return false; // Se o campo está vazio, não faz nada
+            if (!valorDigitado) return false; 
 
-            // Filtra o array local de nomes (listaNomesCursos)
             const sugestoes = listaNomesCursos.filter(nome => 
                 nome.toLowerCase().includes(valorDigitado)
             );
 
-            // Cria os divs para cada sugestão
-            sugestoes.slice(0, 10).forEach(nome => { // Limita a 10 sugestões
+            sugestoes.slice(0, 10).forEach(nome => { 
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'autocomplete-item';
                 
-                // Deixa em negrito a parte que o usuário digitou
                 const index = nome.toLowerCase().indexOf(valorDigitado);
                 itemDiv.innerHTML = nome.substring(0, index);
                 itemDiv.innerHTML += `<strong>${nome.substring(index, index + valorDigitado.length)}</strong>`;
                 itemDiv.innerHTML += nome.substring(index + valorDigitado.length);
 
-                // Evento 'click': ao clicar na sugestão...
                 itemDiv.addEventListener('click', function() {
-                    inputTermo.value = nome; // Preenche o campo
-                    fecharAutocomplete(); // Fecha o menu
-                    btnBuscar.click(); // Dispara a busca automaticamente
+                    inputTermo.value = nome; 
+                    fecharAutocomplete(); 
+                    btnBuscar.click(); 
                 });
                 
                 autocompleteList.appendChild(itemDiv);
             });
         });
         
-        // Fecha o menu se o usuário clicar fora
         document.addEventListener('click', function(e) {
             if (e.target !== inputTermo) {
                 fecharAutocomplete();
             }
         });
-        // --- FIM DA LÓGICA DO AUTOCOMPLETE ---
-
 
         async function buscar() {
             divLoading.style.display = 'block';
             divResultados.innerHTML = '';
             divTotal.innerHTML = '';
-            fecharAutocomplete(); // Fecha o menu ao buscar
+            fecharAutocomplete(); 
 
             const termo = inputTermo.value;
             const instituicao = selectInstituicao.value;
@@ -324,8 +328,8 @@
                             `Olá, tenho interesse no curso *${curso.Nome}* da *${curso.Instituição}*. Poderia me passar mais informações?`
                         );
                         
-                        // !! Lembre-se de trocar aqui seu número de WhatsApp
-                        const seuNumeroWhatsApp = "556182915935"; // <-- TROQUE AQUI
+                        // !! SEU NÚMERO DE WHATSAPP !!
+                        const seuNumeroWhatsApp = "5561982915935"; // (Já está correto)
                         
                         const linkWhatsApp = `https://api.whatsapp.com/send?phone=${seuNumeroWhatsApp}&text=${textoWhatsApp}`;
 
@@ -351,10 +355,9 @@
             }
         }
 
-        // --- Eventos ---
         document.addEventListener('DOMContentLoaded', () => {
             popularFiltros();
-            popularAutocomplete(); // <-- Carrega os nomes dos cursos
+            popularAutocomplete(); 
         });
         
         btnBuscar.addEventListener('click', buscar);
