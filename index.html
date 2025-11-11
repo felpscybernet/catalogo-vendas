@@ -3,215 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buscador de Cursos</title>
+    <title>Qualifica Cursos - Técnicos e Graduação EAD</title>
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --cor-primaria: #007bff;
-            --cor-primaria-hover: #0056b3;
+            --cor-primaria: #0052cc; /* Tom de azul mais forte */
+            --cor-primaria-hover: #0041a3;
             --cor-verde-wpp: #25D366;
             --cor-verde-wpp-hover: #1DA851;
-            --cor-fundo: #f0f2f5;
+            --cor-fundo: #f4f7f6;
             --cor-card: #ffffff;
             --cor-texto: #333;
+            --cor-texto-claro: #555;
             --sombra: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --font-principal: 'Roboto', sans-serif;
+            --font-titulo: 'Inter', sans-serif;
         }
         body {
-            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-family: var(--font-principal);
             margin: 0;
-            padding: 0; /* Removido padding do body */
+            padding: 0; 
             background-color: var(--cor-fundo);
             color: var(--cor-texto);
         }
         
-        /* --- PASSO 2: NOVA SEÇÃO "HERO" (SOBRE + GATILHOS) --- */
+        /* --- Seção Hero (Banner Principal) --- */
         .hero {
-            background: linear-gradient(rgba(0, 86, 179, 0.8), rgba(0, 86, 179, 0.8)), url('https://images.unsplash.com/photo-1523240795610-571c6d860350?auto=format&fit=crop&w=1200&q=80');
+            background: linear-gradient(rgba(0, 82, 204, 0.85), rgba(0, 65, 163, 0.85)), url('https://images.unsplash.com/photo-1523240795610-571c6d860350?auto=format&fit=crop&w=1200&q=80');
             background-size: cover;
             background-position: center;
             color: white;
-            padding: 50px 20px;
+            padding: 60px 20px 80px 20px; /* Mais padding no final */
             text-align: center;
         }
         .hero h1 {
+            font-family: var(--font-titulo);
             margin: 0;
-            font-size: 2.5em;
+            font-size: 2.8em;
             font-weight: 700;
         }
         .hero h2 {
-            font-size: 1.4em;
+            font-size: 1.5em;
             font-weight: 400;
             margin: 10px 0 0 0;
             opacity: 0.9;
         }
-        /* --- FIM DA SEÇÃO HERO --- */
+        .hero p {
+            max-width: 650px;
+            margin: 20px auto 0 auto;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
 
         /* Container do Buscador */
         .container {
             max-width: 900px;
-            margin: -30px auto 20px auto; /* Puxa para cima, sobrepondo o hero */
+            margin: -40px auto 30px auto; /* Puxa para cima */
             background-color: var(--cor-card);
             border-radius: 10px;
-            box-shadow: var(--sombra);
-            padding: 25px;
-            position: relative; /* Garante que fique acima do hero */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); /* Sombra mais forte */
+            padding: 30px;
+            position: relative; 
             z-index: 10;
         }
-
-        .filtros {
+        
+        /* --- NOVA SEÇÃO DE BENEFÍCIOS (FEATURES) --- */
+        .features {
+            max-width: 900px;
+            margin: 40px auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            padding: 0 20px;
         }
-        .filtro-item {
-            display: flex;
-            flex-direction: column;
-            position: relative; 
+        .feature-item {
+            text-align: center;
         }
-        .filtro-item label {
-            margin-bottom: 5px;
+        .feature-item h3 {
+            font-family: var(--font-titulo);
+            font-size: 1.3em;
+            color: var(--cor-primaria);
+            margin-top: 0;
+        }
+        .feature-item p {
+            color: var(--cor-texto-claro);
+            line-height: 1.6;
+        }
+
+        /* --- NOVA SEÇÃO DE CONFIANÇA (TRUST BAR) --- */
+        .trust-bar {
+            background-color: #e9ecef;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .trust-bar h4 {
+            font-family: var(--font-titulo);
+            margin: 0 0 15px 0;
+            color: var(--cor-texto-claro);
+            font-size: 1.2em;
             font-weight: 500;
         }
-        .filtro-item input,
-        .filtro-item select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box; 
-            font-size: 16px;
-        }
-        #btn-buscar {
-            grid-column: 1 / -1; 
-            padding: 12px;
-            background-color: var(--cor-primaria);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
+        .trust-bar .parceiros {
+            font-size: 1.1em;
             font-weight: 700;
-            cursor: pointer;
-            transition: background-color 0.2s;
+            color: var(--cor-texto);
         }
-        #btn-buscar:hover {
-            background-color: var(--cor-primaria-hover);
+
+        /* --- NOVO FOOTER (RODAPÉ) --- */
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            background-color: #343a40;
+            color: #ccc;
         }
-        #total-resultados {
-            font-weight: 700;
-            color: #555;
-            margin-bottom: 15px;
+        footer p {
+            margin: 5px 0;
         }
-        .curso-card {
-            background-color: #fdfdfd;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-            transition: all 0.2s ease-in-out;
+        footer a {
+            color: var(--cor-primaria);
+            text-decoration: none;
         }
-        .curso-card:hover {
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
-        }
+
+        /* --- ESTILOS DO BUSCADOR (JÁ EXISTIAM) --- */
+        .filtros { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .filtro-item { display: flex; flex-direction: column; position: relative; }
+        .filtro-item label { margin-bottom: 5px; font-weight: 500; }
+        .filtro-item input, .filtro-item select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 16px; }
+        #btn-buscar { grid-column: 1 / -1; padding: 12px; background-color: var(--cor-primaria); color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: 700; cursor: pointer; transition: background-color 0.2s; }
+        #btn-buscar:hover { background-color: var(--cor-primaria-hover); }
+        #total-resultados { font-weight: 700; color: #555; margin-bottom: 15px; }
+        .curso-card { background-color: #fdfdfd; border: 1px solid #eee; border-radius: 8px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.08); transition: all 0.2s ease-in-out; }
+        .curso-card:hover { box-shadow: 0 4px 10px rgba(0,0,0,0.1); transform: translateY(-2px); }
         .curso-card h3 { margin: 0 0 10px 0; color: var(--cor-primaria); font-size: 1.3em; }
         .curso-card strong { color: #444; }
         .curso-card p { margin: 8px 0; line-height: 1.5; }
-        .curso-card .argumento {
-            font-style: italic;
-            color: #006400;
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px dashed #eee;
-        }
+        .curso-card .argumento { font-style: italic; color: #006400; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #eee; }
         #loading { text-align: center; font-size: 18px; color: #888; display: none; }
-        
-        .btn-whatsapp {
-            display: inline-block;
-            text-decoration: none;
-            background-color: var(--cor-verde-wpp);
-            color: white !important;
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-weight: bold;
-            text-align: center;
-            margin-top: 10px;
-            transition: background-color 0.2s;
-        }
+        .btn-whatsapp { display: inline-block; text-decoration: none; background-color: var(--cor-verde-wpp); color: white !important; padding: 10px 15px; border-radius: 5px; font-weight: bold; text-align: center; margin-top: 10px; transition: background-color 0.2s; }
         .btn-whatsapp:hover { background-color: var(--cor-verde-wpp-hover); }
-
-        /* Estilos do Autocomplete (v3.0) */
-        #autocomplete-container {
-            position: relative; 
-        }
-        #autocomplete-list {
-            position: absolute;
-            border: 1px solid #d4d4d4;
-            border-top: none;
-            z-index: 99;
-            top: 100%;
-            left: 0;
-            right: 0;
-            max-height: 300px; 
-            overflow-y: auto;
-            background-color: #fff;
-        }
-        .autocomplete-item {
-            padding: 10px;
-            cursor: pointer;
-            border-bottom: 1px solid #eee;
-        }
-        .autocomplete-item:hover {
-            background-color: #e9e9e9;
-        }
-        .autocomplete-item strong { 
-            color: var(--cor-primaria-hover);
-        }
-        
+        #autocomplete-container { position: relative; }
+        #autocomplete-list { position: absolute; border: 1px solid #d4d4d4; border-top: none; z-index: 99; top: 100%; left: 0; right: 0; max-height: 300px; overflow-y: auto; background-color: #fff; }
+        .autocomplete-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
+        .autocomplete-item:hover { background-color: #e9e9e9; }
+        .autocomplete-item strong { color: var(--cor-primaria-hover); }
     </style>
 </head>
 <body>
     
     <section class="hero">
-        <h1>Transforme sua Carreira Hoje</h1>
+        <h1>Qualifica Cursos EAD</h1>
         <h2>De "quebra-galho" a **referência na equipe**.</h2>
-        <p style="max-width: 600px; margin: 15px auto 0 auto;">
+        <p>
             Invista em você e conquiste **mais oportunidades, mais respeito e mais renda**. 
-            Todos os nossos cursos (Técnicos, Graduação e Pós) são 100% EAD e possuem **diploma reconhecido pelo MEC/SISTEC**.
-            Gente da região já está entrando em novas vagas. Comece agora!
+            Encontre abaixo seu curso técnico, graduação ou pós-graduação 100% EAD e com **diploma reconhecido pelo MEC/SISTEC**.
         </p>
     </section>
 
     <div class="container">
-        
         <div class="filtros">
             <div class="filtro-item" style="grid-column: 1 / -1;" id="autocomplete-container">
                 <label for="filtro-termo">Buscar por nome:</label>
                 <input type="text" id="filtro-termo" placeholder="Digite o nome do curso...">
                 <div id="autocomplete-list"></div>
             </div>
-            
             <div class="filtro-item">
                 <label for="filtro-instituicao">Instituição:</label>
                 <select id="filtro-instituicao">
                     <option value="">-- Todas --</option>
                 </select>
             </div>
-            
             <div class="filtro-item">
                 <label for="filtro-categoria">Categoria:</label>
                 <select id="filtro-categoria">
                     <option value="">-- Todas --</option>
                 </select>
             </div>
-            
             <button id="btn-buscar">Buscar</button>
         </div>
         
@@ -219,6 +191,34 @@
         <div id="loading">Carregando...</div>
         <div id="resultados-container"></div>
     </div>
+
+    <section class="features">
+        <div class="feature-item">
+            <h3>🎓 Certificação Garantida</h3>
+            <p>Todos os cursos, do técnico à pós-graduação, são reconhecidos pelo MEC e registrados no SISTEC. Seu diploma tem validade em todo o território nacional.</p>
+        </div>
+        <div class="feature-item">
+            <h3>💻 Flexibilidade Total (100% EAD)</h3>
+            <p>Estude no seu ritmo. Nossa plataforma é 100% EAD com vídeo-aulas curtas, material para baixar e tutores no chat para tirar suas dúvidas.</p>
+        </div>
+        <div class="feature-item">
+            <h3>🚀 Foco na Sua Carreira</h3>
+            <p>Não deixe o estágio ser um empecilho. Nossos parceiros oferecem alternativas para você concluir seu curso. Nosso foco é que você termine rápido (a partir de 3 meses para Superior Sequencial) e entre no mercado.</p>
+        </div>
+    </section>
+
+    <section class="trust-bar">
+        <h4>Instituições Parceiras Credenciadas</h4>
+        <div class="parceiros">
+            UNICORP | Metha Educação | UNIFTB | UNIFEMM
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2025 Qualifica Cursos - Todos os direitos reservados.</p>
+        <p>Desenvolvido como ferramenta de consultoria de vendas.</p>
+    </footer>
+
 
     <script>
         const API_URL = "https://api-catalogo-filipe.onrender.com";
@@ -328,8 +328,7 @@
                             `Olá, tenho interesse no curso *${curso.Nome}* da *${curso.Instituição}*. Poderia me passar mais informações?`
                         );
                         
-                        // !! SEU NÚMERO DE WHATSAPP !!
-                        const seuNumeroWhatsApp = "5561982915935"; // (Já está correto)
+                        const seuNumeroWhatsApp = "5561982915935"; 
                         
                         const linkWhatsApp = `https://api.whatsapp.com/send?phone=${seuNumeroWhatsApp}&text=${textoWhatsApp}`;
 
